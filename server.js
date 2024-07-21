@@ -8,6 +8,14 @@ const app = express();
 //Middleware
 app.use(morgan('dev'));
 
+//Routs
+
+
+//Landing page
+app.get('/',(req,res,next)=>{
+    res.render('index.ejs');
+})
+
 app.listen(3000, () => {
   console.log("Listening on port 3000");
 });
