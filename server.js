@@ -1,7 +1,6 @@
-// Here is where we import modules
-// We begin by loading Express
 require('dotenv').config();
 const express = require('express');
+const methodOverride = require('method-override');
 const morgan = require('morgan');
 
 // DATABASE
@@ -14,37 +13,27 @@ const app = express();
 // MIDDLEWARE
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: false }));
-
+app.use(methodOverride('_method'));
+const fruitsCtrl = require("./controllers/fruits");
 // ROUTES
 
 // Landing Page
-app.get('/', (req, res, next) => {
-  res.render('index.ejs');
-});
+app.get('/', fruitsCtrl.home);
 
 // Fruits
-app.get('/fruits/new', (req, res, next) => {
-  res.render('fruits/new.ejs');
-});
+app.get('/fruits/new', fruitsCtrl.nwe);
 
-app.post('/fruits', async (req, res, next) => {
-  
-  if (req.body.isReadyToEat === 'on') {
-    req.body.isReadyToEat = true;
-  } else {
-    req.body.isReadyToEat = false;
-  }
+app.post('/fruits', fruitsCtrl.create);
 
-  // insert the req body into the database
-  await Fruit.create(req.body);
-  res.redirect('/fruits');
-});
+app.get('/fruits', fruitsCtrl.index);
 
-app.get('/fruits', async (req, res, next) => {
-  const fruits = await Fruit.find();
+app.get('/fruits/:fruitId',fruitsCtrl.show );
 
-  res.render('fruits/index.ejs', { fruits });
-});
+app.delete('/fruits/:fruitId',fruitsCtrl.deleted);
+
+app.get('/fruits/:fruitId/edit', fruitsCtrl.edit);
+
+app.put('/fruits/:fruitId', fruitsCtrl.update);
 
 app.listen(3000, () => {
   console.log('Listening on port 3000');
